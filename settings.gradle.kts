@@ -1,1 +1,1 @@
-rootProject.name = "test-shift"
+rootProject.name = "app"
