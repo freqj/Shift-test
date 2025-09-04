@@ -89,14 +89,21 @@ public class Main {
 
         }
 
-
+        Path p = Path.of(params.getOrDefault("path", "output"));
+        boolean isFile = p.getFileName().toString().contains(".");
         try {
-            Files.createDirectory(Path.of(params.getOrDefault("path", "output")));
-        } catch (IOException e) {
+            if (isFile) {
+                p = p.getParent() != null? p.getParent() : Path.of(".");
+                Files.createDirectories(p);
+            } else {
+                Files.createDirectory(p);
+            }
+        }catch (IOException e) {
             e.getMessage();
         }
 
-        var dir = params.getOrDefault("path", "output") + "/";
+
+        var dir = p + "/";
         File errorFile = new File(dir + "error.log");
         writeToFile(err, errorFile);
         for(Map.Entry<String, List<String[]>> entry : result.entrySet()){
@@ -114,7 +121,12 @@ public class Main {
                 }
             }
             else{
-                String path = dir + "statistics.txt";
+                String path;
+                if(params.get("path") != null && isFile){
+                    path = params.get("path");
+                }else {
+                    path = dir + "statistics.txt";
+                }
                 File statFile = new File(path);
                 writeToFile(stat, statFile);
             }
